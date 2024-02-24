@@ -1,0 +1,57 @@
+
+
+pipeline {
+    agent {
+        docker {
+            image 'rust:alpine3.19'
+            args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+    // Uncommented environment block
+    environment {
+        SERVER_IP="io.github.oengajohn.com"
+        SERVER_IPCREDS = credentials("uat-test-creds")
+    }
+    stages {
+        stage('Clone Repository') {
+            steps {
+                script {
+                   final scmVars = checkout(scm)
+                    env.BRANCH_NAME = scmVars.GIT_BRANCH
+                    env.SHORT_COMMIT = "${scmVars.GIT_COMMIT[0..7]}"
+                    env.GIT_REPO_NAME = scmVars.GIT_URL.replaceFirst(/^.*\/([^\/]+?).git$/, '$1')
+                    env.BUILDVERSION = BUILDVERSION()
+                }
+            }
+        }
+        stage("Install Dependencies") {
+            steps {
+                sh 'apk add --no-cache sqlite-dev musl-dev' // Fixed package name
+                sh 'cargo install cross'
+            }
+        }
+        stage("Create and Tar Working") {
+            steps {
+                script {
+                    sh 'cross build --target x86_64-unknown-linux-gnu --release --workspace'
+                    sh 'mkdir -p working'
+                    sh 'cp ./target/x86_64-unknown-linux-gnu/release/agent ./working'
+                    sh 'cp ./target/x86_64-unknown-linux-gnu/agent-cli ./working'
+                    def version = sh(script: 'grep -oP \'version\\s*=\\s*"\\K[^\']\' cargo.toml', returnStdout: true).trim()
+                    sh 'tar -cvf "${working}.tar" "${working}"' // Fixed variable interpolation
+                }
+            }
+        }
+        stage('Securely Copy Working to Server') {
+            steps {
+                script {
+                    // Use scp plugin with secure credentials
+                    sh "scp -i ~/.ssh/id_rsa ${working}.tar ${usrdynatrace}@10.22.1.222:${home}/working.tar" // Fixed file path and added missing quotes
+                }
+            }
+        }
+    }
+}
+
+
+
