@@ -9,6 +9,7 @@ pipeline {
         SERVER_IP = 'io.github.oengajohn.com'
         SERVER_IPCREDS = credentials('uat-test-creds')
         GIT_VERSION = '2.44' // Specify your desired Git version
+        
     }
     stages {
         stage('Clone Repository') {
