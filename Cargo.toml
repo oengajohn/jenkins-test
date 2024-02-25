@@ -10,10 +10,10 @@ description = "<to be filled>"
 
 [workspace]
 members = [
-  "agent-cli",
-  "system",
-  "exporters",
-  "config",
-  "utils",
-  "net"
+#   "agent-cli",
+#   "system",
+#   "exporters",
+#   "config",
+#   "utils",
+#   "net"
 ]
