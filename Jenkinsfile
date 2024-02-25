@@ -1,8 +1,8 @@
 pipeline {
     agent {
-        docker {
-            image 'mysql' // Specify your Docker image and tag
-            args '-u root'
+         docker {
+            image 'rust:latest'
+            args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
     environment {
@@ -11,7 +11,6 @@ pipeline {
         GIT_REPO_NAME = ''
         BUILDVERSION = ''
         SERVER_IP = 'io.github.oengajohn.com'
-        SERVER_IPCREDS = credentials('uat-test-creds')
     }
     stages {
         stage('Clone Repository') {
@@ -25,6 +24,9 @@ pipeline {
                     GIT_REPO_NAME = sh(script: 'basename `git rev-parse --show-toplevel`', returnStdout: true).trim()
                     BUILDVERSION = sh(script: 'git describe --always', returnStdout: true).trim()
                 }
+                // Use the specified Git version
+
+                echo 'Done installation'
             }
         }
     }
