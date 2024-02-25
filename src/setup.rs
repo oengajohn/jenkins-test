@@ -5,11 +5,11 @@ use utils::{
 };
 
 pub async fn get_key() -> String {
-  read_string("/etc/oenga/.key",false).await.unwrap()
+  read_string("/etc/Oenga/.key",false).await.unwrap()
 }
 
 pub async fn get_agent_config_encrypted() -> String {
-  read_string("/etc/oenga/.config",false).await.unwrap()
+  read_string("/etc/Oenga/.config",false).await.unwrap()
 }
 
 pub async fn get_agent_config() -> AgentConfigs {
