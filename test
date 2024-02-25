@@ -1,5 +1,4 @@
 
-
 pipeline {
     agent {
         docker {
@@ -9,14 +8,14 @@ pipeline {
     }
     // Uncommented environment block
     environment {
-        SERVER_IP="io.github.oengajohn.com"
-        SERVER_IPCREDS = credentials("uat-test-creds")
+        SERVER_IP = 'io.github.oengajohn.com'
+        SERVER_IPCREDS = credentials('uat-test-creds')
     }
     stages {
         stage('Clone Repository') {
             steps {
                 script {
-                   final scmVars = checkout(scm)
+                    final scmVars = checkout(scm)
                     env.BRANCH_NAME = scmVars.GIT_BRANCH
                     env.SHORT_COMMIT = "${scmVars.GIT_COMMIT[0..7]}"
                     env.GIT_REPO_NAME = scmVars.GIT_URL.replaceFirst(/^.*\/([^\/]+?).git$/, '$1')
@@ -24,13 +23,13 @@ pipeline {
                 }
             }
         }
-        stage("Install Dependencies") {
+        stage('Install Dependencies') {
             steps {
                 sh 'apk add --no-cache sqlite-dev musl-dev' // Fixed package name
                 sh 'cargo install cross'
             }
         }
-        stage("Create and Tar Working") {
+        stage('Create and Tar Working') {
             steps {
                 script {
                     sh 'cross build --target x86_64-unknown-linux-gnu --release --workspace'
@@ -52,6 +51,3 @@ pipeline {
         }
     }
 }
-
-
-
