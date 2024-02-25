@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'rust:latest'
+            image 'rust:alpine3.19'
             args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
@@ -27,7 +27,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo "Branch -> ${env.BRANCH_NAME}"
-                // sh 'apk add --no-cache sqlite-dev musl-dev' // Fixed package name
+                sh 'apk add --no-cache sqlite-dev musl-dev' // Fixed package name
                 sh 'cargo install cross'
             }
         }
