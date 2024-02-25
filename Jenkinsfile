@@ -27,7 +27,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo "Branch -> ${env.BRANCH_NAME}"
-                sh 'apk add --no-cache sqlite-dev musl-dev' // Fixed package name
+                // sh 'apk add --no-cache sqlite-dev musl-dev' // Fixed package name
                 sh 'cargo install cross'
             }
         }
